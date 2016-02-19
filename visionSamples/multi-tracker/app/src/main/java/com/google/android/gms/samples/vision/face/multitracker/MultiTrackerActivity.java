@@ -18,7 +18,6 @@ package com.google.android.gms.samples.vision.face.multitracker;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,11 +36,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.samples.vision.face.multitracker.ui.camera.CameraSourcePreview;
 import com.google.android.gms.samples.vision.face.multitracker.ui.camera.GraphicOverlay;
-
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiDetector;
 import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.gms.vision.face.FaceDetector;
 
 import java.io.IOException;
@@ -131,7 +128,11 @@ public final class MultiTrackerActivity extends AppCompatActivity {
         // is set to receive the face detection results, track the faces, and maintain graphics for
         // each face on screen.  The factory is used by the multi-processor to create a separate
         // tracker instance for each face.
-        FaceDetector faceDetector = new FaceDetector.Builder(context).build();
+        FaceDetector faceDetector = new FaceDetector.Builder(context)
+                .setMode(FaceDetector.FAST_MODE)
+                //.setProminentFaceOnly(true)
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .build();
         FaceTrackerFactory faceFactory = new FaceTrackerFactory(mGraphicOverlay);
         faceDetector.setProcessor(
                 new MultiProcessor.Builder<>(faceFactory).build());
@@ -140,10 +141,10 @@ public final class MultiTrackerActivity extends AppCompatActivity {
         // is set to receive the barcode detection results, track the barcodes, and maintain
         // graphics for each barcode on screen.  The factory is used by the multi-processor to
         // create a separate tracker instance for each barcode.
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
+        /*BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).build();
         BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay);
         barcodeDetector.setProcessor(
-                new MultiProcessor.Builder<>(barcodeFactory).build());
+                new MultiProcessor.Builder<>(barcodeFactory).build());*/
 
         // A multi-detector groups the two detectors together as one detector.  All images received
         // by this detector from the camera will be sent to each of the underlying detectors, which
@@ -152,7 +153,7 @@ public final class MultiTrackerActivity extends AppCompatActivity {
         // screen.
         MultiDetector multiDetector = new MultiDetector.Builder()
                 .add(faceDetector)
-                .add(barcodeDetector)
+                //.add(barcodeDetector)
                 .build();
 
         if (!multiDetector.isOperational()) {
@@ -184,7 +185,7 @@ public final class MultiTrackerActivity extends AppCompatActivity {
         mCameraSource = new CameraSource.Builder(getApplicationContext(), multiDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
                 .setRequestedPreviewSize(1600, 1024)
-                .setRequestedFps(15.0f)
+                .setRequestedFps(30.0f)
                 .build();
     }
 

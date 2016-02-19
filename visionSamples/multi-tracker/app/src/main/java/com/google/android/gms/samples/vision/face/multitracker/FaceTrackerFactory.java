@@ -19,10 +19,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.google.android.gms.samples.vision.face.multitracker.ui.camera.GraphicOverlay;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.samples.vision.face.multitracker.ui.camera.GraphicOverlay;
+import com.google.android.gms.vision.face.Landmark;
 
 /**
  * Factory for creating a tracker and associated graphic to be associated with a new face.  The
@@ -48,7 +49,7 @@ class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
  */
 class FaceGraphic extends TrackedGraphic<Face> {
     private static final float FACE_POSITION_RADIUS = 10.0f;
-    private static final float ID_TEXT_SIZE = 40.0f;
+    private static final float ID_TEXT_SIZE = 42.0f;
     private static final float ID_Y_OFFSET = 50.0f;
     private static final float ID_X_OFFSET = -50.0f;
     private static final float BOX_STROKE_WIDTH = 5.0f;
@@ -108,7 +109,8 @@ class FaceGraphic extends TrackedGraphic<Face> {
         float cx = translateX(face.getPosition().x + face.getWidth() / 2);
         float cy = translateY(face.getPosition().y + face.getHeight() / 2);
         canvas.drawCircle(cx, cy, FACE_POSITION_RADIUS, mFacePositionPaint);
-        canvas.drawText("id: " + getId(), cx + ID_X_OFFSET, cy + ID_Y_OFFSET, mIdPaint);
+        canvas.drawText(String.valueOf(Math.round(face.getIsSmilingProbability() * 100)),
+                cx + ID_X_OFFSET, cy + ID_Y_OFFSET, mIdPaint);
 
         // Draws an oval around the face.
         float xOffset = scaleX(face.getWidth() / 2.0f);
